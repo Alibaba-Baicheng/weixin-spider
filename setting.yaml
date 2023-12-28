@@ -1,0 +1,18 @@
+urls:
+ -
+   url: https://secsa.shec.edu.cn/xstyw/list_ssgs.jsp?channelT=4&channelName=%E7%A7%A9%E5%BA%8F%E5%86%8C&curpage=0&nav=0&sign=1
+   nick: 上海学生体育网
+   htmltype: 'js'
+   datatype: 'array'
+   searchtype: 're.search'
+   searchpattern: 'r"\{.*\}"'
+   relusts:
+    title: 'gbname'
+    createtime: 'gbstime'
+    url: 'gbrule'
+   pages: 0
+   decode: 'utf-8'
+   cookies: 'JSESSIONID=2533D79F8D9CC11D0B124476E60D6337; JSESSIONID=0793FD264B39A1420E11EB3056A470D4; Hm_lvt_a164cf1adfba4e60922321f25d41124d=1688748354; Hm_lpvt_a164cf1adfba4e60922321f25d41124d=1688748354'
+   useragent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+   datas: 'rows'
+daysbetween: 1
