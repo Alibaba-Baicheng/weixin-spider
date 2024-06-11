@@ -9,6 +9,7 @@ from datetime import datetime
 import warnings
 import sys
 import os
+import re
 warnings.filterwarnings('ignore')
 
 def main(points='',dofile=''):
@@ -28,7 +29,8 @@ def main(points='',dofile=''):
         file_data = file.read()
     config = yaml.safe_load(file_data) 
 
-    
+    filters=config['filters']
+
 
     daysbetween=config['daysbetween']
 
@@ -113,14 +115,14 @@ def main(points='',dofile=''):
             '''
             if(resp['base_resp']['ret'] == 200013):
                 print(f"----------第{str(cookiepoint)}个账号被限流啦,正在尝试下一个账号-------------")
-                print("-----------手工执行参数 "+ f'python3 wenxin-spider.py {str(i-1)} {filename}' + "----------")
+                print("-----------手工执行参数 "+ f'python3 weixin-spider.py {str(i-1)} {filename}' + "----------")
                 validcookie[cookiepoint]=True
                 checkcookieOK=False
                 donextpoint=True
                # print(f"fdsafasfsa={str(all(validcookie))}")
             elif(resp['base_resp']['ret'] == 200003):
                 print(f"----------第{str(cookiepoint)}个账号session 过期啦，请检查token或者cookie-----------")
-                print("-----------手工执行参数 "+ f'python3 wenxin-spider.py {str(i-1)} {filename}' + "----------")
+                print("-----------手工执行参数 "+ f'python3 weixin-spider.py {str(i-1)} {filename}' + "----------")
                 break
             else:
                 checkcookieOK = True
@@ -135,10 +137,12 @@ def main(points='',dofile=''):
                 checkcookieOK == False
                 donextpoint=False
 
-        print(f'\rProgress:{str(i)}/{str(count)}',end='')
+        print(f'Progress:{str(i)}/{str(count)}',end='')
         
         if "app_msg_list" in resp:
+            #print(f"进入过滤1")
             for item in resp["app_msg_list"]:
+                #print(f"进入过滤2")
                 #create_time=time.localtime(item['create_time'])
                 createtime=item['create_time']
                 create_time=datetime.fromtimestamp(createtime)
@@ -146,9 +150,22 @@ def main(points='',dofile=''):
                 #print(item)
                 if (today-create_time_date).days <= daysbetween:
                 #print(f'{createtime}' + "," +create_time)
-                    info = '"{}","{}","{}","{}",{}'.format(fakeitem, item['digest'],item['title'], create_time, item['link'])
-                    with open(filename, "a",encoding='utf-8-sig') as f:
-                     f.write(info+'\n')
+                #check filters
+                    for filter in filters:
+                        strtitle=str(item['title'])
+                        poxs=strtitle.find(filter)
+                        #print(f"{filter}") 
+                        #print(f"{poxs}")
+                        if poxs!= -1:
+                            print(f"找到符合条件的文章")
+                            info = '"{}","{}","{}","{}",{}'.format(fakeitem, item['digest'],item['title'], create_time, item['link'])
+                            with open(filename, "a",encoding='utf-8-sig') as f:
+                                f.write(info+'\n')
+                            break
+                #else:
+                    #print(f"文章创建时间不符合要求,要求 '{daysbetween}' 天之内")
+        else:
+            print(f"网页返回错误！")
         i+=1
         cookiepointstart +=1
         #print(f"{str(fakeitem)}执行完毕，等待下一个执行")         
